@@ -6,7 +6,7 @@ import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Card } from '@/components/ui/card';
 import { useToast } from '@/components/ui/use-toast';
-import { Zap, Loader2 } from 'lucide-react';
+import { Loader2 } from 'lucide-react';
 import { z } from 'zod';
 
 const emailSchema = z.string().email('Nieprawidłowy adres email');
@@ -21,17 +21,12 @@ const Auth = () => {
   const { toast } = useToast();
 
   useEffect(() => {
-    // Check if user is already logged in
     supabase.auth.getSession().then(({ data: { session } }) => {
-      if (session) {
-        navigate('/');
-      }
+      if (session) navigate('/');
     });
 
     const { data: { subscription } } = supabase.auth.onAuthStateChange((event, session) => {
-      if (session) {
-        navigate('/');
-      }
+      if (session) navigate('/');
     });
 
     return () => subscription.unsubscribe();
@@ -39,8 +34,7 @@ const Auth = () => {
 
   const handleAuth = async (e: React.FormEvent) => {
     e.preventDefault();
-    
-    // Validate inputs
+
     try {
       emailSchema.parse(email);
       passwordSchema.parse(password);
@@ -59,51 +53,31 @@ const Auth = () => {
 
     try {
       if (isLogin) {
-        const { error } = await supabase.auth.signInWithPassword({
-          email,
-          password,
-        });
-
-        if (error) {
-          if (error.message.includes('Invalid login credentials')) {
-            throw new Error('Nieprawidłowy email lub hasło');
-          }
-          throw error;
-        }
-
-        toast({
-          title: 'Zalogowano!',
-          description: 'Witaj ponownie w Tab4Storm',
-        });
+        const { error } = await supabase.auth.signInWithPassword({ email, password });
+        if (error) throw new Error("Nieprawidłowy email lub hasło");
+        toast({ title: 'Zalogowano!', description: 'Witaj ponownie w Tab4Storm' });
       } else {
-        const redirectUrl = `${window.location.origin}/`;
-        
+        const redirectUrl = `${window.location.origin}/auth`;
+
         const { error } = await supabase.auth.signUp({
           email,
           password,
-          options: {
-            emailRedirectTo: redirectUrl,
-          },
+          options: { emailRedirectTo: redirectUrl },
         });
 
-        if (error) {
-          if (error.message.includes('already registered')) {
-            throw new Error('Ten email jest już zarejestrowany');
-          }
-          throw error;
-        }
+        if (error) throw error;
 
         toast({
           title: 'Konto utworzone!',
-          description: 'Możesz się teraz zalogować. Masz 3 darmowe użycia!',
+          description: 'Sprawdź maila i kliknij link aktywacyjny!',
         });
+
         setIsLogin(true);
       }
-    } catch (error) {
-      console.error('Auth error:', error);
+    } catch (error: any) {
       toast({
         title: 'Błąd',
-        description: error instanceof Error ? error.message : 'Wystąpił błąd',
+        description: error.message || 'Wystąpił błąd',
         variant: 'destructive',
       });
     } finally {
@@ -115,16 +89,14 @@ const Auth = () => {
     <div className="min-h-screen bg-gradient-dark flex items-center justify-center p-4">
       <Card className="w-full max-w-md p-8 bg-transparent border-border shadow-card">
         <div className="flex flex-col items-center mb-8">
-         <div className="mx-auto mb-4 w-28 h-28 rounded-2xl flex items-center justify-center overflow-hidden">
-  <img 
-    src="/logo.png" 
-    alt="Tab4Storm Logo"
-    className="w-full h-full object-contain"
-  />
-</div>
+          <div className="mx-auto mb-4 w-28 h-28 rounded-2xl flex items-center justify-center overflow-hidden">
+            <img src="/logo.png" alt="Tab4Storm Logo" className="w-full h-full object-contain" />
+          </div>
+
           <h1 className="text-3xl font-bold bg-gradient-primary bg-clip-text text-transparent">
             Tab4Storm
           </h1>
+
           <p className="text-sm text-muted-foreground mt-2">
             {isLogin ? 'Zaloguj się do swojego konta' : 'Utwórz nowe konto'}
           </p>
@@ -132,68 +104,95 @@ const Auth = () => {
 
         <form onSubmit={handleAuth} className="space-y-4">
           <div className="space-y-2">
-            <Label htmlFor="email">Email</Label>
+            <Label>Email</Label>
             <Input
-              id="email"
               type="email"
               placeholder="twoj@email.com"
               value={email}
               onChange={(e) => setEmail(e.target.value)}
-              required
               disabled={loading}
               className="bg-secondary"
             />
           </div>
 
           <div className="space-y-2">
-            <Label htmlFor="password">Hasło</Label>
+            <Label>Hasło</Label>
             <Input
-              id="password"
               type="password"
               placeholder="••••••••"
               value={password}
               onChange={(e) => setPassword(e.target.value)}
-              required
               disabled={loading}
               className="bg-secondary"
             />
           </div>
 
-          <Button
-            type="submit"
-            className="w-full"
-            disabled={loading}
-          >
-            {loading ? (
-              <>
-                <Loader2 className="mr-2 h-4 w-4 animate-spin" />
-                Proszę czekać...
-              </>
-            ) : (
-              isLogin ? 'Zaloguj się' : 'Zarejestruj się'
-            )}
+          <Button type="submit" className="w-full" disabled={loading}>
+            {loading ? <><Loader2 className="mr-2 h-4 w-4 animate-spin" /> Proszę czekać...</> :
+            isLogin ? 'Zaloguj się' : 'Zarejestruj się'}
           </Button>
         </form>
 
+        {/* Sekcja pod formularzem */}
         <div className="mt-6 text-center">
+
+          {/* Przełącznik Login/Register */}
           <button
             onClick={() => setIsLogin(!isLogin)}
             className="text-sm text-primary hover:underline"
             disabled={loading}
           >
-            {isLogin
-              ? 'Nie masz konta? Zarejestruj się'
-              : 'Masz już konto? Zaloguj się'}
+            {isLogin ? 'Nie masz konta? Zarejestruj się' : 'Masz już konto? Zaloguj się'}
           </button>
-        </div>
 
-        {!isLogin && (
-          <div className="mt-6 p-4 bg-primary/10 rounded-lg border border-primary/20">
-            <p className="text-xs text-center text-muted-foreground">
-              Nowe konto otrzymuje <span className="font-bold text-primary">3 darmowe użycia</span>
-            </p>
-          </div>
-        )}
+          {/* RESET HASŁA */}
+          {isLogin && (
+            <button
+              type="button"
+              onClick={async () => {
+                if (!email) {
+                  toast({
+                    title: "Podaj email",
+                    description: "Wpisz swój email przed resetem hasła.",
+                    variant: "destructive",
+                  });
+                  return;
+                }
+
+                const { error } = await supabase.auth.resetPasswordForEmail(email, {
+                  redirectTo: `${window.location.origin}/reset`,
+                });
+
+                if (error) {
+                  toast({ title: "Błąd", description: error.message, variant: "destructive" });
+                } else {
+                  toast({
+                    title: "Email wysłany!",
+                    description: "Sprawdź skrzynkę i kliknij link resetujący.",
+                  });
+                }
+              }}
+              className="text-xs text-primary hover:underline block mt-2"
+            >
+              Zapomniałeś hasła?
+            </button>
+          )}
+
+          {/* Logowanie Google */}
+          <button
+            onClick={async () => {
+              await supabase.auth.signInWithOAuth({
+                provider: "google",
+                options: { redirectTo: `${window.location.origin}/` },
+              });
+            }}
+            className="w-full mt-4 flex items-center justify-center gap-2 py-2 bg-white text-black rounded-md border hover:bg-gray-100 transition"
+          >
+            <img src="https://www.svgrepo.com/show/475656/google-color.svg" className="w-5 h-5" />
+            Kontynuuj z Google
+          </button>
+
+        </div>
       </Card>
     </div>
   );
