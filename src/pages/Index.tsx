@@ -220,32 +220,31 @@ const buyPremium = async () => {
     return null;
   }
 
-  return (
-    <div className="min-h-screen bg-gradient-dark flex flex-col">
-      {/* Header */}
-      <header className="p-6 border-b border-border bg-card/50 backdrop-blur-sm">
-        <div className="flex items-center justify-between">
-          <div className="flex items-center gap-3">
-           <div className="p-2 rounded-lg w-12 h-12 flex items-center justify-center overflow-hidden">
-              <img 
-               src="/logo.png" 
-               alt="Tab4Storm Logo" 
-               className="w-full h-full object-contain rounded-xl"
+return (
+  <div className="min-h-screen bg-gradient-dark flex flex-col">
+    {/* Header */}
+    <header className="p-6 border-b border-border bg-transparent backdrop-blur-sm">
+      <div className="flex items-center justify-between">
+        <div className="flex items-center gap-3">
 
-              />
-            </div>
-            <div>
-              <h1 className="text-2xl font-bold bg-gradient-primary bg-clip-text text-transparent">
-                Tab4Storm Multiplier
-              </h1>
-              <p className="text-sm text-muted-foreground">
-                Otwieraj wiele stron z automatyczną rejestracją AI
-              </p>
-            </div>
+          <div className="p-2 rounded-lg w-12 h-12 flex items-center justify-center overflow-hidden bg-transparent">
+            <img 
+              src="/logo.png" 
+              alt="Tab4Storm Logo"
+              className="w-full h-full object-contain rounded-xl"
+            />
           </div>
-          <UserMenu />
+
         </div>
-      </header>
+        
+        <div>
+          <h1 className="text-2xl font-bold bg-gradient-primary bg-clip-text text-transparent">
+            Tab4Storm Multiplier
+          </h1>
+        </div>
+
+      </div>
+    </header>
 
       {/* Main Content */}
       <div className="flex-1 flex gap-6 p-6 overflow-hidden">

@@ -113,7 +113,7 @@ const Auth = () => {
 
   return (
     <div className="min-h-screen bg-gradient-dark flex items-center justify-center p-4">
-      <Card className="w-full max-w-md p-8 bg-card border-border shadow-card">
+      <Card className="w-full max-w-md p-8 bg-transparent border-border shadow-card">
         <div className="flex flex-col items-center mb-8">
          <div className="mx-auto mb-4 w-28 h-28 rounded-2xl flex items-center justify-center overflow-hidden">
   <img 
