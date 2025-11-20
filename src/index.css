@@ -1,0 +1,80 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+/* Definition of the design system. All colors, gradients, fonts, etc should be defined here. 
+All colors MUST be HSL.
+*/
+
+@layer base {
+  :root {
+    /* TabStorm - Teal/Turquoise Theme */
+    --background: 190 45% 10%;
+    --foreground: 180 25% 95%;
+
+    --card: 190 40% 15%;
+    --card-foreground: 180 25% 95%;
+
+    --popover: 190 45% 12%;
+    --popover-foreground: 180 25% 95%;
+
+    --primary: 180 60% 50%;
+    --primary-foreground: 180 10% 98%;
+
+    --secondary: 190 35% 20%;
+    --secondary-foreground: 180 25% 95%;
+
+    --muted: 190 30% 25%;
+    --muted-foreground: 180 15% 65%;
+
+    --accent: 175 65% 45%;
+    --accent-foreground: 180 10% 98%;
+
+    --destructive: 0 70% 50%;
+    --destructive-foreground: 0 0% 98%;
+
+    --border: 190 30% 28%;
+    --input: 190 35% 20%;
+    --ring: 180 60% 50%;
+
+    --radius: 0.75rem;
+
+    /* Gradients */
+    --gradient-primary: linear-gradient(135deg, hsl(180, 60%, 50%), hsl(175, 65%, 45%));
+    --gradient-dark: linear-gradient(180deg, hsl(190, 45%, 10%), hsl(190, 40%, 15%));
+    
+    /* Shadows */
+    --shadow-glow: 0 0 30px hsla(180, 60%, 50%, 0.3);
+    --shadow-card: 0 8px 24px hsla(190, 45%, 8%, 0.5);
+  }
+}
+
+@layer base {
+  * {
+    @apply border-border;
+  }
+
+  body {
+    @apply bg-background text-foreground;
+    font-family: 'Inter', system-ui, -apple-system, sans-serif;
+  }
+
+  /* Custom scrollbar */
+  ::-webkit-scrollbar {
+    width: 8px;
+    height: 8px;
+  }
+
+  ::-webkit-scrollbar-track {
+    background: hsl(var(--background));
+  }
+
+  ::-webkit-scrollbar-thumb {
+    background: hsl(var(--primary) / 0.5);
+    border-radius: 4px;
+  }
+
+  ::-webkit-scrollbar-thumb:hover {
+    background: hsl(var(--primary) / 0.7);
+  }
+}
