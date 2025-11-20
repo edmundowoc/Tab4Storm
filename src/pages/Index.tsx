@@ -226,7 +226,7 @@ const buyPremium = async () => {
       <header className="p-6 border-b border-border bg-card/50 backdrop-blur-sm">
         <div className="flex items-center justify-between">
           <div className="flex items-center gap-3">
-            <div className="p-2 bg-gradient-primary rounded-xl w-14 h-14 flex items-center justify-center overflow-hidden">
+           <div className="p-2 rounded-lg w-12 h-12 flex items-center justify-center overflow-hidden">
               <img 
                src="/logo.png" 
                alt="Tab4Storm Logo" 
