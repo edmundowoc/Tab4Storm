@@ -224,27 +224,31 @@ return (
   <div className="min-h-screen bg-gradient-dark flex flex-col">
     {/* Header */}
     <header className="p-6 border-b border-border bg-transparent backdrop-blur-sm">
-      <div className="flex items-center justify-between">
-        <div className="flex items-center gap-3">
+  <div className="flex items-center justify-between">
 
-          <div className="p-2 rounded-lg w-12 h-12 flex items-center justify-center overflow-hidden bg-transparent">
-            <img 
-              src="/logo.png" 
-              alt="Tab4Storm Logo"
-              className="w-full h-full object-contain rounded-xl"
-            />
-          </div>
-
-        </div>
-        
-        <div>
-          <h1 className="text-2xl font-bold bg-gradient-primary bg-clip-text text-transparent">
-            Tab4Storm Multiplier
-          </h1>
-        </div>
-
+    {/* LEFT SIDE — logo */}
+    <div className="flex items-center gap-3">
+      <div className="p-2 rounded-lg w-12 h-12 flex items-center justify-center overflow-hidden bg-transparent">
+        <img 
+          src="/logo.png" 
+          alt="Tab4Storm Logo" 
+          className="w-full h-full object-contain rounded-xl"
+        />
       </div>
-    </header>
+    </div>
+
+    {/* RIGHT SIDE — title + user menu */}
+    <div className="flex items-center gap-4">
+      <h1 className="text-2xl font-bold bg-gradient-primary bg-clip-text text-transparent">
+        Tab4Storm Multiplier
+      </h1>
+
+      {/* TU JEST PRZYCISK LOGOWANIA / WYLOGOWANIA */}
+      <UserMenu />
+    </div>
+
+  </div>
+</header>
 
       {/* Main Content */}
       <div className="flex-1 flex gap-6 p-6 overflow-hidden">
