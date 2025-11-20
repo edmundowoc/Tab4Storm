@@ -16,6 +16,18 @@ import { Zap } from 'lucide-react';
 import type { User, Session } from '@supabase/supabase-js';
 
 const Index = () => {
+const buyPremium = async () => {
+  try {
+    const res = await fetch("/api/create-checkout-session");
+    const data = await res.json();
+    if (data.url) {
+      window.location.href = data.url;
+    }
+  } catch (error) {
+    console.error("Stripe error:", error);
+  }
+};
+
   const [user, setUser] = useState<User | null>(null);
   const [session, setSession] = useState<Session | null>(null);
   const [urls, setUrls] = useState<string[]>([]);
@@ -239,6 +251,13 @@ const Index = () => {
       <div className="flex-1 flex gap-6 p-6 overflow-hidden">
         {/* Left Sidebar */}
         <div className="w-80 flex flex-col gap-4 overflow-y-auto">
+<button 
+  onClick={buyPremium}
+  className="w-full py-2 px-4 bg-primary hover:bg-primary/80 text-primary-foreground rounded-lg font-medium transition-colors"
+>
+  🔥 Kup Premium – Odblokuj pełny dostęp
+</button>
+
           <UsageDisplay />
 
           <UrlInput
