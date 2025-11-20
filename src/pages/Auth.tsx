@@ -115,12 +115,11 @@ const Auth = () => {
     <div className="min-h-screen bg-gradient-dark flex items-center justify-center p-4">
       <Card className="w-full max-w-md p-8 bg-card border-border shadow-card">
         <div className="flex flex-col items-center mb-8">
-          <div className="p-3 bg-gradient-primary rounded-lg shadow-glow mb-4 w-16 h-16 flex items-center justify-center overflow-hidden">
-            <img 
-              src="/logo.png" 
-              alt="Tab4Storm Logo" 
-              className="w-20 h-20 object-cover scale-125"
-              style={{ objectPosition: '50% 45%' }}
+          <div className="mx-auto mb-4 w-20 h-20 p-1 bg-gradient-primary rounded-2xl shadow-glow flex items-center justify-center overflow-hidden">
+  <img 
+    src="/logo.png" 
+    alt="Tab4Storm Logo"
+    className="w-full h-full object-contain rounded-xl"
             />
           </div>
           <h1 className="text-3xl font-bold bg-gradient-primary bg-clip-text text-transparent">
