@@ -214,12 +214,12 @@ const Index = () => {
       <header className="p-6 border-b border-border bg-card/50 backdrop-blur-sm">
         <div className="flex items-center justify-between">
           <div className="flex items-center gap-3">
-            <div className="p-2 bg-gradient-primary rounded-lg shadow-glow w-12 h-12 flex items-center justify-center overflow-hidden">
+            <div className="p-2 bg-gradient-primary rounded-xl shadow-glow w-12 h-12 flex items-center justify-center overflow-hidden">
               <img 
-                src="/logo.png" 
-                alt="Tab4Storm Logo" 
-                className="w-16 h-16 object-cover scale-125"
-                style={{ objectPosition: '50% 45%' }}
+               src="/logo.png" 
+               alt="Tab4Storm Logo" 
+               className="w-16 h-16 object-cover scale-125 rounded-xl"/>
+
               />
             </div>
             <div>
