@@ -81,9 +81,9 @@ const Index = () => {
   if (!user) return null;
 
   const handleStart = async (urls: string[], count: number) => {
-    const { data: usageCheck } = await supabase.functions.invoke("check-usage", {
-      body: { userId: user.id, repeatCount },
-    });
+   const { data: usageCheck } = await supabase.functions.invoke("check-usage", {
+  body: { repeatCount },
+});
 
     if (!usageCheck?.allowed) {
       toast({
