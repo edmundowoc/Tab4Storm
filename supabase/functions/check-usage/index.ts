@@ -17,102 +17,94 @@ Deno.serve(async (req) => {
     const supabaseAnonKey = Deno.env.get('SUPABASE_ANON_KEY')!;
     const supabaseServiceKey = Deno.env.get('SUPABASE_SERVICE_ROLE_KEY')!;
 
-    // Verify authentication
+    // ---- AUTH ----
     const authHeader = req.headers.get('Authorization');
     if (!authHeader) {
-      return new Response(
-        JSON.stringify({ error: 'Unauthorized - No authorization header' }),
-        {
-          status: 401,
-          headers: { ...corsHeaders, 'Content-Type': 'application/json' },
-        }
-      );
+      return new Response(JSON.stringify({ error: 'Unauthorized' }), {
+        status: 401,
+        headers: { ...corsHeaders, 'Content-Type': 'application/json' },
+      });
     }
 
     const jwt = authHeader.replace('Bearer ', '');
     const supabaseClient = createClient(supabaseUrl, supabaseAnonKey);
-    const { data: { user }, error: authError } = await supabaseClient.auth.getUser(jwt);
+    const { data: { user } } = await supabaseClient.auth.getUser(jwt);
 
-    if (authError || !user) {
-      console.error('Auth error:', authError);
-      return new Response(
-        JSON.stringify({ error: 'Unauthorized - Invalid token' }),
-        {
-          status: 401,
-          headers: { ...corsHeaders, 'Content-Type': 'application/json' },
-        }
-      );
+    if (!user) {
+      return new Response(JSON.stringify({ error: 'Unauthorized' }), {
+        status: 401,
+        headers: { ...corsHeaders, 'Content-Type': 'application/json' },
+      });
     }
 
-    // Use authenticated user's ID instead of accepting from request body
-    const userId = user.id;
-    const { repeatCount } = await req.json();
-
-    // Create service role client for database operations
+    const { repeatCount = 1 } = await req.json();
     const supabase = createClient(supabaseUrl, supabaseServiceKey);
 
-    // Get user usage
-    const { data: usage, error: usageError } = await supabase
+    // ---- GET USAGE ----
+    const { data: usage } = await supabase
       .from('user_usage')
-      .select('usage_count, has_paid')
-      .eq('user_id', userId)
+      .select('*')
+      .eq('user_id', user.id)
       .single();
 
-    if (usageError || !usage) {
-      throw new Error('Failed to fetch usage data');
+    if (!usage) {
+      return new Response(JSON.stringify({
+        allowed: false,
+        message: "Brak wpisu w user_usage"
+      }), {
+        status: 400,
+        headers: { ...corsHeaders, 'Content-Type': 'application/json' },
+      });
     }
 
-    const canUse = usage.has_paid || usage.usage_count < FREE_LIMIT;
-    const usageLeft = usage.has_paid ? Infinity : Math.max(0, FREE_LIMIT - usage.usage_count);
-
-    if (!canUse) {
-      return new Response(
-        JSON.stringify({
-          allowed: false,
-          reason: 'usage_limit_exceeded',
-          message: 'Wykorzystano wszystkie darmowe użycia. Kup dostęp Premium.',
-        }),
-        {
-          status: 403,
-          headers: { ...corsHeaders, 'Content-Type': 'application/json' },
-        }
-      );
+    // ---- PREMIUM: unlimited ----
+    if (usage.has_paid === true) {
+      return new Response(JSON.stringify({
+        allowed: true,
+        message: "Premium user – unlimited access",
+      }), {
+        status: 200,
+        headers: { ...corsHeaders, 'Content-Type': 'application/json' },
+      });
     }
 
-    // Increment usage count
-    const newUsageCount = usage.usage_count + repeatCount;
-    
+    // ---- FREE USERS ----
+    const newUsage = usage.usage_count + repeatCount;
+
+    if (newUsage > FREE_LIMIT) {
+      return new Response(JSON.stringify({
+        allowed: false,
+        message: "Limit darmowych użyć przekroczony",
+      }), {
+        status: 403,
+        headers: { ...corsHeaders, 'Content-Type': 'application/json' },
+      });
+    }
+
+    // update usage for free users only
     await supabase
       .from('user_usage')
       .update({
-        usage_count: newUsageCount,
+        usage_count: newUsage,
         last_used_at: new Date().toISOString(),
       })
-      .eq('user_id', userId);
+      .eq('user_id', user.id);
 
-    return new Response(
-      JSON.stringify({
-        allowed: true,
-        usage: {
-          count: newUsageCount,
-          limit: FREE_LIMIT,
-          has_paid: usage.has_paid,
-          usageLeft: usage.has_paid ? Infinity : Math.max(0, FREE_LIMIT - newUsageCount),
-        },
-      }),
-      { headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
-    );
-  } catch (error) {
-    console.error('Check usage error:', error);
-    return new Response(
-      JSON.stringify({
-        allowed: false,
-        error: error instanceof Error ? error.message : 'Unknown error',
-      }),
-      {
-        status: 500,
-        headers: { ...corsHeaders, 'Content-Type': 'application/json' },
-      }
-    );
+    return new Response(JSON.stringify({
+      allowed: true,
+      message: "OK",
+    }), {
+      status: 200,
+      headers: { ...corsHeaders, 'Content-Type': 'application/json' },
+    });
+
+  } catch (e) {
+    return new Response(JSON.stringify({
+      allowed: true,  // <-- PREMIUM NIE MOŻE SIĘ BLOKOWAĆ NA BŁĘDZIE
+      error: e.message,
+    }), {
+      status: 200,
+      headers: { ...corsHeaders, 'Content-Type': 'application/json' },
+    });
   }
 });
